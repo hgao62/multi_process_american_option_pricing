@@ -101,8 +101,8 @@ def get_yield_curve() -> YieldCurve:
 
 def get_dividends(ticker:str):
     
-    ticker = yf.Ticker(ticker)
-    last_divs = ticker.dividends[-1:]
+    ticker_object = yf.Ticker(ticker)
+    last_divs = ticker_object.dividends[-1:]
 
     # An approximate rule for Apple's ex-dividend dates -- ex-dividend date is on the first Friday
     # of the last month of a season if that Friday is the 5th day of the month or later, otherwise
