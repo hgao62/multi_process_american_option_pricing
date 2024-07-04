@@ -100,7 +100,7 @@ def get_yield_curve() -> YieldCurve:
     )
     return curve
 
-def get_dividends(ticker:str):
+def get_dividends(ticker:str)->pd.Series:
     
     ticker_object = yf.Ticker(ticker)
     last_divs = ticker_object.dividends[-1:]
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     ticker = "AAPL"
     stock_historical_prices = get_price(ticker)
     stock_price = stock_historical_prices[-1]
-    strike_price = 224
+    strike_price = 225
     risk_free_interest_rate = get_yield_curve()
     maturity_date = date(2025, 1, 17)
     volatility = get_volatility(stock_historical_prices)
