@@ -16,10 +16,8 @@ import numpy as np
 yf.pdr_override()
 
 
-def _get_garch(ticker:str) -> ParameterEstimator:
-    start = BDay(1).rollback(date.today() - relativedelta(years=+2))
-    data = web.get_data_yahoo(ticker, start, date.today())
-    asset_prices = data['Adj Close']
+def _get_garch(asset_prices:pd.DataFrame) -> ParameterEstimator:
+    
     vol_estimator = parameter_estimators.GARCHParameterEstimator(asset_prices)
     return vol_estimator
 
@@ -141,12 +139,12 @@ def price_option(
 
 if __name__ == "__main__":
     ticker = "AAPL"
-    res = _get_garch(ticker)
-    stock_price = get_price(ticker)
+    stock_historical_prices = get_price(ticker)
+    stock_price = stock_historical_prices[-1]
     strike_price = 180
     risk_free_interest_rate = get_yield_curve()
     maturity_date = date(2025, 1, 17)
-    volatility = get_volatility(stock_price)
+    volatility = get_volatility(ticker,stock_price)
     option_type = OptionType.AMERICAN
     pricing_result = price_option(
         volatility,
