@@ -144,7 +144,7 @@ if __name__ == "__main__":
     strike_price = 180
     risk_free_interest_rate = get_yield_curve()
     maturity_date = date(2025, 1, 17)
-    volatility = get_volatility(ticker,stock_historical_prices)
+    volatility = get_volatility(stock_historical_prices)
     option_type = OptionType.AMERICAN
     pricing_result = price_option(
         volatility,
@@ -153,5 +153,6 @@ if __name__ == "__main__":
         risk_free_interest_rate,
         maturity_date,
         option_type,
+        ticker
     )
     print(pricing_result)
