@@ -88,8 +88,8 @@ class OptionsPricer:
                 self.divs = None
 
     def __str__(self):
-        return '%s %s %s option with strike %s and maturity %s, price: %.2f, \u03c3: %.4f, '\
-               '\u0394: %.3f, \u0393: %.3f, \u03Bd: %.3f'\
+        return '%s %s %s option with strike %s and maturity %s, price: %.2f, annual vol: %.4f, '\
+               'delta: %.3f, gamma: %.3f, vega: %.3f'\
               % (self.ticker, self.opt_type, 'call' if self.is_call else 'put',
                  self.strike, self.maturity_date.strftime('%Y-%m-%d'),
                  self.get_price(), self.annual_volatility, self.get_delta(), self.get_gamma(), self.get_vega())

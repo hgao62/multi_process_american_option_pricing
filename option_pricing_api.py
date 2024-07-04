@@ -12,6 +12,7 @@ from pricing.options import OptionType, OptionsPricer
 import pandas_datareader.data as web
 import pandas_market_calendars as mcal
 import numpy as np
+import time
 
 yf.pdr_override()
 
@@ -138,10 +139,11 @@ def price_option(
 
 
 if __name__ == "__main__":
+    start_time = time.perf_counter()
     ticker = "AAPL"
     stock_historical_prices = get_price(ticker)
     stock_price = stock_historical_prices[-1]
-    strike_price = 180
+    strike_price = 224
     risk_free_interest_rate = get_yield_curve()
     maturity_date = date(2025, 1, 17)
     volatility = get_volatility(stock_historical_prices)
@@ -155,4 +157,7 @@ if __name__ == "__main__":
         option_type,
         ticker
     )
+    end_time = time.perf_counter()   #  3. 加入我们内部函数的功能 记录结束时间
+    total_time = end_time - start_time # 计算时间差
+    print(f'Option pricing took {total_time:.4f} seconds') # 打印结果
     print(pricing_result)
