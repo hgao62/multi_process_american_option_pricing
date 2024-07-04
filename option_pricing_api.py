@@ -18,18 +18,42 @@ yf.pdr_override()
 
 
 def _get_garch(asset_prices:pd.DataFrame) -> ParameterEstimator:
+    """Get for the ω, α, and β parameters of the GARCH(1, 1) model
+
+    Args:
+        asset_prices (pd.DataFrame): stock's historical prices
+
+    Returns:
+        ParameterEstimator: estimator object that contains ω, α, and β
+    """
     
     vol_estimator = parameter_estimators.GARCHParameterEstimator(asset_prices)
     return vol_estimator
 
 
-def get_price(ticker: str) -> float:
+def get_historical_price(ticker: str) -> pd.DataFrame:
+    """Get stock's historical price
+
+    Args:
+        ticker (str): stock ticker name
+
+    Returns:
+        pd.DataFrame: data frame that has historical prices
+    """
     start = BDay(1).rollback(date.today() - relativedelta(years=+2))
     res = web.get_data_yahoo(ticker, start, date.today())
     return res["Adj Close"]
 
 
 def get_volatility(asset_prices: pd.DataFrame) -> VolatilityTracker:
+    """Get volatility forecast
+
+    Args:
+        asset_prices (pd.DataFrame): stock's historical prices
+
+    Returns:
+        VolatilityTracker: _description_
+    """
     vol_estimator = _get_garch(asset_prices)
     vol_tracker = volatility_trackers.GARCHVolatilityTracker(
         vol_estimator.omega, vol_estimator.alpha, vol_estimator.beta, asset_prices
@@ -38,9 +62,14 @@ def get_volatility(asset_prices: pd.DataFrame) -> VolatilityTracker:
 
 
 def get_yield_curve() -> YieldCurve:
+    """Constructing the riskless yield curve based on the current fed funds rate and treasury yields
+    
+    Returns:
+        YieldCurve: yield curve object
+    """
     today = date.today()
 
-    # Constructing the riskless yield curve based on the current fed funds rate and treasury yields
+    # 
     data = web.get_data_fred(
         [
             "DFF",
@@ -101,6 +130,14 @@ def get_yield_curve() -> YieldCurve:
     return curve
 
 def get_dividends(ticker:str)->pd.Series:
+    """Get dividends of a stock
+
+    Args:
+        ticker (str): stock ticker
+
+    Returns:
+        pd.Series: pandas series that contains dates and its dividend amount
+    """
     
     ticker_object = yf.Ticker(ticker)
     last_divs = ticker_object.dividends[-1:]
@@ -122,6 +159,20 @@ def price_option(
     opt_type: OptionType,
     ticker:str,
 ) -> OptionsPricer:
+    """Function to price an american or european option
+
+    Args:
+        volatility (VolatilityTracker):stock's volatility
+        stock_price (float): price of a stock
+        strike_price (int): strike price
+        risk_free_interest_rate (YieldCurve): risk free interest rate
+        maturity_date (datetime): maturity date
+        opt_type (OptionType): option type(american or european)
+        ticker (str): stock ticker
+
+    Returns:
+        OptionsPricer: option object that has annual volatility, price, delta, gamma, vega
+    """
     holidays = mcal.get_calendar("NYSE").holidays().holidays
     divs = get_dividends(ticker)
     pricer = options.BlackScholesMertonPricer(
@@ -141,7 +192,7 @@ def price_option(
 if __name__ == "__main__":
     start_time = time.perf_counter()
     ticker = "AAPL"
-    stock_historical_prices = get_price(ticker)
+    stock_historical_prices = get_historical_price(ticker)
     stock_price = stock_historical_prices[-1]
     strike_price = 225
     risk_free_interest_rate = get_yield_curve()
