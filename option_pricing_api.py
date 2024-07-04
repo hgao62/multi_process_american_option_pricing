@@ -28,10 +28,10 @@ def get_price(ticker: str) -> float:
     return res["Adj Close"]
 
 
-def get_volatility(ticker: str, asset_price: float) -> VolatilityTracker:
-    vol_estimator = _get_garch(ticker)
+def get_volatility(asset_prices: pd.DataFrame) -> VolatilityTracker:
+    vol_estimator = _get_garch(asset_prices)
     vol_tracker = volatility_trackers.GARCHVolatilityTracker(
-        vol_estimator.omega, vol_estimator.alpha, vol_estimator.beta, asset_price
+        vol_estimator.omega, vol_estimator.alpha, vol_estimator.beta, asset_prices
     )
     return vol_tracker
 
@@ -144,7 +144,7 @@ if __name__ == "__main__":
     strike_price = 180
     risk_free_interest_rate = get_yield_curve()
     maturity_date = date(2025, 1, 17)
-    volatility = get_volatility(ticker,stock_price)
+    volatility = get_volatility(ticker,stock_historical_prices)
     option_type = OptionType.AMERICAN
     pricing_result = price_option(
         volatility,
