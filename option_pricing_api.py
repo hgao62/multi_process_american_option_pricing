@@ -157,7 +157,7 @@ if __name__ == "__main__":
         option_type,
         ticker
     )
-    end_time = time.perf_counter()   #  3. 加入我们内部函数的功能 记录结束时间
-    total_time = end_time - start_time # 计算时间差
-    print(f'Option pricing took {total_time:.4f} seconds') # 打印结果
+    end_time = time.perf_counter()  
+    total_time = end_time - start_time 
+    print(f'Option pricing took {total_time:.4f} seconds') 
     print(pricing_result)
