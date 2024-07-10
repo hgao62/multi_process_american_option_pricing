@@ -233,17 +233,10 @@ if __name__ == "__main__":
     
 
     maturity_date = date(2025, 1, 17)
-    
+    holidays = mcal.get_calendar("NYSE").holidays().holidays
     option_type = OptionType.AMERICAN
-    
-    pricing_result = price_option(
-        strike_price,
-        maturity_date,
-        option_type,
-        ticker
-    )
-    
-    
+    risk_free_interest_rate = get_yield_curve()
+    pricing_result = price_atm_american_option_multi_process(ticker,risk_free_interest_rate,maturity_date, holidays)    
     end_time = time.perf_counter()  
     total_time = end_time - start_time 
     print(f'Option pricing took {total_time:.4f} seconds') 

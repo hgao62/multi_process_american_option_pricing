@@ -1,12 +1,12 @@
 from pathlib import Path
 import pandas as pd
 from typing import List
-from multiprocessing import Pool, TimeoutError, cpu_count
-from option_pricing_api import get_yield_curve,price_atm_american_option_multi_process, OptionsPricer, 
+from multiprocessing import Pool, cpu_count
+from option_pricing_api import get_yield_curve,price_atm_american_option_multi_process
 from pricing.options import BlackScholesMertonPricer
 import pandas_market_calendars as mcal
 from datetime import date
-from constants import Greeks, PRICE
+
 def load_stock_list() -> List[str]:
     """Read stock list from csv file"""
     project_dir = Path(__file__).parent
@@ -34,10 +34,14 @@ def main():
     holidays = mcal.get_calendar("NYSE").holidays().holidays
     risk_free_interest_rate = get_yield_curve()
     maturity_date = date(2025,1,17)
-    with Pool(processes=cpu_count()) as pool:
+    with Pool(processes=2) as pool:
         pricing_results = pool.starmap(price_atm_american_option_multi_process,[(x, risk_free_interest_rate,maturity_date,holidays) for x in stock_list])
 
     results_df = format_pricing_result_as_dataframe(pricing_results)
     results_df['ticker'] = stock_list
     results_df.to_csv("pricing_result.csv")
    
+
+
+if __name__ == "__main__":
+    main()
