@@ -6,6 +6,7 @@ from option_pricing_api import get_yield_curve,price_atm_american_option_multi_p
 from pricing.options import BlackScholesMertonPricer
 import pandas_market_calendars as mcal
 from datetime import date
+from constants import PricingResult
 
 def load_stock_list() -> List[str]:
     """Read stock list from csv file"""
@@ -38,7 +39,8 @@ def main():
         pricing_results = pool.starmap(price_atm_american_option_multi_process,[(x, risk_free_interest_rate,maturity_date,holidays) for x in stock_list])
 
     results_df = format_pricing_result_as_dataframe(pricing_results)
-    results_df['ticker'] = stock_list
+    results_df['Ticker'] = stock_list
+    results_df = results_df[["Ticker"] + [col.value for col in PricingResult]]
     results_df.to_csv("pricing_result.csv")
    
 
