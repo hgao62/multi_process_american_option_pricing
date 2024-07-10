@@ -215,7 +215,7 @@ class BlackScholesMertonPricer(OptionsPricer):
         self.d2 = d2
 
     @property
-    def price(self):
+    def fair_value(self):
         return self.get_price()
     
     @property

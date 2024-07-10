@@ -19,7 +19,7 @@ def format_pricing_result_as_dataframe(pricing_results:List[BlackScholesMertonPr
     for pricing_result in pricing_results:
         
         res = {}
-        res["Price"] = pricing_result.price
+        res["Price"] = pricing_result.fair_value
         res["Delta"] = pricing_result.delta
         res["Gamma"] = pricing_result.gamma
         res["Vega"] = pricing_result.vega
