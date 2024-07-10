@@ -188,26 +188,62 @@ def price_option(
     )
     return pricer
 
+def price_atm_american_option_multi_process(
+    ticker:str,
+    risk_free_interest_rate: YieldCurve,
+    maturity_date: datetime,
+    holidays:tuple
+) -> OptionsPricer:
+    """Function to price an at the money  option
+
+    Args:
+        risk_free_interest_rate (YieldCurve): risk free interest rate
+        maturity_date (datetime): maturity date
+        opt_type (OptionType): option type(american or european)
+        ticker (str): stock ticker
+
+    Returns:
+        OptionsPricer: option object that has annual volatility, price, delta, gamma, vega
+    """
+    stock_historical_prices = get_historical_price(ticker)
+    stock_price = stock_historical_prices[-1]
+    volatility = get_volatility(stock_historical_prices)
+    strike_price = int(stock_price) # set strike price equal to stock price 
+                                    # so we are pricing an atm option(definition)
+    divs = get_dividends(ticker)
+    pricer = options.BlackScholesMertonPricer(
+        maturity_date,
+        volatility,
+        strike_price,
+        risk_free_interest_rate,
+        stock_price,
+        ticker=ticker,
+        dividends=divs,
+        opt_type=OptionType.AMERICAN,
+        holidays=holidays,
+    )
+    return pricer
 
 if __name__ == "__main__":
     start_time = time.perf_counter()
     ticker = "AAPL"
-    stock_historical_prices = get_historical_price(ticker)
-    stock_price = stock_historical_prices[-1]
+    
+    
     strike_price = 225
-    risk_free_interest_rate = get_yield_curve()
+    
+
     maturity_date = date(2025, 1, 17)
-    volatility = get_volatility(stock_historical_prices)
+    
     option_type = OptionType.AMERICAN
+    
     pricing_result = price_option(
-        volatility,
-        stock_price,
         strike_price,
-        risk_free_interest_rate,
         maturity_date,
         option_type,
         ticker
     )
+    
+    
     end_time = time.perf_counter()  
     total_time = end_time - start_time 
     print(f'Option pricing took {total_time:.4f} seconds') 

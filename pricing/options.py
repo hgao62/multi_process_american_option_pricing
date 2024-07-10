@@ -214,9 +214,34 @@ class BlackScholesMertonPricer(OptionsPricer):
         self.d1 = d1
         self.d2 = d2
 
+    @property
+    def price(self):
+        return self.get_price()
+    
+    @property
+    def delta(self):
+        return self.get_delta()
+    
+    @property
+    def gamma(self):
+        return self.get_gamma()
+    
+    @property
+    def vega(self):
+        return self.get_vega()
+    @property
+    def rho(self):
+        return self.get_rho()
+    
+    @property
+    def theta(self):
+        return self.get_theta()
+    
     def get_price(self):
         # In case we are dealing with an American call option where early exercise is advantageous
         return self.price if self.early_exercise_pricer is None else self.early_exercise_pricer.get_price()
+    
+   
     
     def get_delta(self):
         if self.early_exercise_pricer:
